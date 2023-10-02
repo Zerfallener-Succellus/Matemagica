@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Sinuca Elpitica</title>
+
+        <link rel="stylesheet" type="text/css" href="css/toast.css">
+        <link rel="stylesheet" type="text/css" href="css/style.css">
+        <link href="http://fonts.googleapis.com/css?family=Open+Sans:300" rel="stylesheet" type="text/css">
+
+        <script src="js/canvashelpers.js"></script>
+        <script src="js/looppool.js"></script>
+    </head>
+    <body>
+        <div class="wrapper">
+            <header>
+                <h2>Sinuca Elpitica</h2>
+                <hr>
+            </header>
+
+            <div class="container">
+               
+
+                    <div class="shard unit span-grid">
+                        <div class="unit four-of-five" id="instructions">
+                            <span id="command"></span>
+                            <span id="orange-option"
+                                  class="orange color-option"
+                                  style="display: none"
+                                  >
+                                laranja
+                            </span>
+                            <span id="red-option"
+                                  class="red color-option"
+                                  style="display: none">
+                                  Começar
+                            </span>
+                            <span id="black-option"
+                                  class="black color-option"
+                                  style="display: none">
+                                black
+                            </span>
+                        </div>
+                        <a href="#" id="restart-btn"
+                           class="btn unit one-of-five">
+                            Recomeçar
+                        </a>
+                    </div>
+
+                    <div class="unit span-grid shard" id="canvas-container">
+                        <canvas id="canvas"></canvas>
+                    </div>
+
+                   
+
+                    
+                    <!-- social button type things end -->
+                </div>
+            </div>
+            <div class="push"></div>
+        </div>
+
+        <footer style="display: none">
+            <div class="footer-bar" id="bar-1"></div>
+            <div class="footer-bar" id="bar-2">
+                By <a href="https://igliu.com" target="_blank">Anthony Liu</a>
+            </div>
+            <div class="footer-bar" id="bar-3"></div>
+            <div class="footer-bar" id="bar-4"></div>
+        </footer>
+    </body>
+</html>

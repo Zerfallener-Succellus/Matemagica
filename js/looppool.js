@@ -104,68 +104,106 @@ var LoopGame = (function() {
 
         //misc variables todo with clicking
         currentlyAiming = false;
-        mouseDownLoc = [], currMouseLoc = [];
+mouseDownLoc = [];
+currMouseLoc = [];
 
-        //event listeners
-        $s('#restart-btn').addEventListener('click', function(e) {
-            e.preventDefault();
-            initState();
-        }, false);
-        
-        $s('#red-option').addEventListener('click', function(e) {
-            e.preventDefault();
-            if (playerColors[0] === false) {
-                playerColors = [3, 2]; //3 is read
-                updateInstructions();
-            }
-        }, false);
-        canvas.addEventListener('mousedown', function(e) {
-            e.preventDefault();
-            if (balls[0].getDistFrom([
-                currMouseLoc[0] - CENTER[0],
-                currMouseLoc[1] - CENTER[1]
-            ]) < PHI*balls[0].r) {
-                currentlyAiming = true;
-                mouseDownLoc = getMousePos(e);
-            }
-        }, false);
-        canvas.addEventListener('mousemove', function(e) {
-            e.preventDefault();
-            currMouseLoc = getMousePos(e);
-        }, false);
-        canvas.addEventListener('mouseup', function(e) {
-            e.preventDefault();
-            if (currentlyAiming) {
-                currentlyAiming = false;
-                if (playerColors[0] !== false && !moveIsOngoing) {
-                    moveIsOngoing = true;
-                    var tentNewVel = [
-                        (currMouseLoc[0] - balls[0].pos[0] - CENTER[0]),
-                        (currMouseLoc[1] - balls[0].pos[1] - CENTER[1])
-                    ];
-                    if (Math.sqrt(Math.pow(tentNewVel[0], 2)+
-                        Math.pow(tentNewVel[1], 2)) > MAX_ARROW_LEN) {
-                        tentNewVel = scalarTimes(
-                            MAX_ARROW_LEN, normalize(tentNewVel)
-                        );
-                    }
-                    var newVel = scalarTimes(VEL_CONST, tentNewVel);
-                    balls[0].vel = newVel;
+// Event listeners
+$s('#restart-btn').addEventListener('click', function (e) {
+    e.preventDefault();
+    initState();
+}, false);
 
-                    if (window.location.protocol.indexOf('http') === 0) {
-                        ga('send', 'event', 'game', 'shoot');
-                    }
-                } else if (playerColors[0] === false) {
-                    //they're trying to move but they haven't selected a color
-                    $s('#command').innerHTML = '<strong style="color: red">'+
-                        $s('#command').innerHTML+
-                    '</strong>';
-                }
+$s('#red-option').addEventListener('click', function (e) {
+    e.preventDefault();
+    if (playerColors[0] === false) {
+        playerColors = [3, 2]; // 3 é vermelho
+        updateInstructions();
+    }
+}, false);
+
+canvas.addEventListener('mousedown', startAiming, false);
+canvas.addEventListener('mousemove', trackMouse, false);
+canvas.addEventListener('mouseup', shootIfAiming, false);
+canvas.addEventListener('touchstart', startAiming, false);
+canvas.addEventListener('touchmove', trackTouch, false);
+canvas.addEventListener('touchend', shootIfAiming, false);
+canvas.addEventListener('mouseout', cancelAiming, false);
+
+function startAiming(e) {
+    e.preventDefault();
+    if (e.touches) {
+        if (balls[0].getDistFrom([
+            currMouseLoc[0] - CENTER[0],
+            currMouseLoc[1] - CENTER[1]
+        ]) < PHI * balls[0].r) {
+            currentlyAiming = true;
+            mouseDownLoc = getTouchPos(e);
+        }
+    } else {
+        if (balls[0].getDistFrom([
+            currMouseLoc[0] - CENTER[0],
+            currMouseLoc[1] - CENTER[1]
+        ]) < PHI * balls[0].r) {
+            currentlyAiming = true;
+            mouseDownLoc = getMousePos(e);
+        }
+    }
+}
+
+function trackMouse(e) {
+    e.preventDefault();
+    currMouseLoc = getMousePos(e);
+}
+
+function trackTouch(e) {
+    e.preventDefault();
+    currMouseLoc = getTouchPos(e);
+}
+
+function shootIfAiming(e) {
+    e.preventDefault();
+    if (currentlyAiming) {
+        currentlyAiming = false;
+        if (playerColors[0] !== false && !moveIsOngoing) {
+            moveIsOngoing = true;
+            var tentNewVel = [
+                (currMouseLoc[0] - balls[0].pos[0] - CENTER[0]),
+                (currMouseLoc[1] - balls[0].pos[1] - CENTER[1])
+            ];
+            if (Math.sqrt(Math.pow(tentNewVel[0], 2) +
+                Math.pow(tentNewVel[1], 2)) > MAX_ARROW_LEN) {
+                tentNewVel = scalarTimes(
+                    MAX_ARROW_LEN, normalize(tentNewVel)
+                );
             }
-        }, false);
-        canvas.addEventListener('mouseout', function(e) {
-            currentlyAiming = false;
-        });
+            var newVel = scalarTimes(VEL_CONST, tentNewVel);
+            balls[0].vel = newVel;
+
+            if (window.location.protocol.indexOf('http') === 0) {
+                ga('send', 'event', 'game', 'shoot');
+            }
+        } else if (playerColors[0] === false) {
+            // Eles estão tentando mover, mas não selecionaram uma cor
+            $s('#command').innerHTML = '<strong style="color: red">' +
+                $s('#command').innerHTML +
+                '</strong>';
+        }
+    }
+}
+
+function cancelAiming() {
+    currentlyAiming = false;
+}
+
+function getTouchPos(e) {
+    var rect = canvas.getBoundingClientRect();
+    var touch = e.touches[0];
+    return [
+        touch.clientX - rect.left,
+        touch.clientY - rect.top
+    ];
+}
+
 
         //draw the board
         requestAnimationFrame(render);
@@ -205,7 +243,7 @@ var LoopGame = (function() {
             $s('#command').innerHTML = '';
             hideAllColors();  
             $s('#'+colors[playerColors[turn]]+'-option')
-                .style.display = 'inline';
+                
         }
     }
 
